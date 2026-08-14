@@ -72,7 +72,7 @@
 .combat-row{ display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start; margin:18px 0; }
 .combat-tablet{
   flex:1 1 320px; max-width:360px; border:1px solid var(--hair); background:var(--bg-panel);
-  display:flex; flex-direction:column;
+  display:flex; flex-direction:column; margin: 0 auto;
 }
 .combat-tablet__head{ display:flex; align-items:center; gap:12px; padding:16px 18px; background:var(--bg-inset); border-bottom:1px solid var(--hair); }
 .combat-tablet__avatar{ width:42px; height:42px; background-image:var(--avatar); background-size:cover; background-position:center; border:1px solid var(--hair); flex:none; }
