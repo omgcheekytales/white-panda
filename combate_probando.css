@@ -65,6 +65,10 @@
      desde una ficha predefinida; el PV y los cálculos del turno siguen
      siendo siempre manuales, también para NPCs).
    ========================================================================= */
+.combat-row br,
+.combat-tablet br {
+   display: none !important;
+}
 .combat-row{ display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start; margin:18px 0; }
 .combat-tablet{
   flex:1 1 320px; max-width:360px; border:1px solid var(--hair); background:var(--bg-panel);
