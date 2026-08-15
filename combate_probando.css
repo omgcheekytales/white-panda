@@ -69,7 +69,7 @@
 .combat-tablet br {
    display: none !important;
 }
-.combat-row{ display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start; margin:18px 0; }
+.combat-row{ display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start; }
 .combat-tablet{
   flex:1 1 320px; max-width:380px; border: var(--border);
   display:flex; flex-direction:column; margin: 0 auto;
