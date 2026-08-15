@@ -76,7 +76,7 @@
 }
 .combat-tablet__head{ display:flex; align-items:center; gap:12px; padding:16px 18px; background: var(--bg-principal); border-bottom: var(--border); }
 .combat-tablet__avatar{ width:42px; height:42px; background-image:var(--avatar); background-size:cover; background-position:center; border:1px solid var(--hair); flex:none; }
-.combat-tablet__name{ font-family:var(--font-type-subtitle); font-size:1.2rem; line-height:1.2; text-transform: uppercase; }
+.combat-tablet__name{ width: fit-content; font-family:var(--font-type-subtitle); font-size:1.1rem; line-height:1.2; text-transform: uppercase; border-bottom: 2px solid var(--group); }
 .combat-tablet__tag{ font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-3); margin-top:3px; }
 
 .combat-section{ padding:16px 18px; border-bottom: var(--border); }
