@@ -71,7 +71,7 @@
 }
 .combat-row{ display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start; margin:18px 0; }
 .combat-tablet{
-  flex:1 1 320px; max-width:360px; border: var(--border);
+  flex:1 1 320px; max-width:380px; border: var(--border);
   display:flex; flex-direction:column; margin: 0 auto;
 }
 .combat-tablet__head{ display:flex; align-items:center; gap:12px; padding:16px 18px; background: var(--bg-principal); border-bottom: var(--border); }
@@ -137,7 +137,7 @@
 .combat-text-box{ background-color: var(--bg-principal); border: var(--border); padding:10px 12px; font-size: .9rem; line-height:1.5; }
 
 /* Listas manuales — historial de daño y roster de NPCs, editadas a mano línea a línea */
-.damage-history-list, .npc-enemies-list ul{ margin:0; padding-left:18px; font-size: .9rem; }
+.damage-history-list, .npc-enemies-list ul{ margin:0; padding-left: 20px; font-size: .9rem; }
 .damage-history-list li, .npc-enemies-list li{ margin-bottom:4px; }
 
 /* Habilidades e inventario de combate — el estado y la descripción los fija
@@ -159,7 +159,7 @@
 .combat-entry[data-status="pasiva"]{ border-style:dashed; }
 .combat-entry[data-status="pasiva"] .combat-entry__status{ color:var(--steel); }
 
-.combat-tablet ul, .combat-tablet ol {
+.post-content .combat-tablet ul, .post-content .combat-tablet ol {
     margin: 0;
 }
 
