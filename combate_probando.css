@@ -125,7 +125,7 @@
 /* Modificadores opcionales (+2 / -1) que el autor puede añadir o quitar a mano */
 .calc-mod{ font-size:11px; color:var(--warn); background:rgba(185,138,62,.08); border:1px solid rgba(185,138,62,.25); padding:3px 5px; }
 
-.calc-total{ min-width:30px; text-align:center; padding:4px 8px; background-color: var(--group-25); border: 1px solid var(--group-25); color: var(--group); font-weight:500; font-size:12.5px; margin-left:auto; }
+.calc-total{ min-width:30px; text-align:center; padding:4px 8px; background-color: color-mix(in srgb, var(--group) 25%, transparent); border: 1px solid color-mix(in srgb, var(--group) 25%, transparent); color: var(--group); font-weight:500; font-size:12.5px; margin-left:auto; }
 .calc-total--damage{ background-color: var(--bg-principal); border: var(--border); color:var(--text-3); }
 .calc-total--damage.calc-total--active{ background:rgba(180,40,40,.15); border-color:var(--accent); color:#e57373; }
 
