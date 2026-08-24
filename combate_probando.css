@@ -149,8 +149,8 @@
 .combat-entry__status{ font-family:var(--font-mono); font-size:8.5px; text-transform:uppercase; letter-spacing:.05em; padding:2px 6px; border:1px solid var(--hair); color:var(--text-3); flex:none; }
 .combat-entry__desc{ font-size: .9rem; line-height:1.4; }
 
-.combat-entry[data-status="en-uso"]{ background-color: var(--group-15); border-color: var(--group-15); }
-.combat-entry[data-status="en-uso"] .combat-entry__status{ color: var(--group); border-color: var(--group-15); }
+.combat-entry[data-status="en-uso"]{ background-color: color-mix(in srgb, var(--group) 15%, transparent); border-color: color-mix(in srgb, var(--group) 15%, transparent); }
+.combat-entry[data-status="en-uso"] .combat-entry__status{ color: var(--group); border-color: color-mix(in srgb, var(--group) 15%, transparent); }
 .combat-entry[data-status="usada"]{ opacity:.5; }
 .combat-entry[data-status="usada"] .combat-entry__name{ text-decoration:line-through; }
 .combat-entry[data-status="usada"] .combat-entry__desc {
@@ -158,6 +158,10 @@
 }
 .combat-entry[data-status="pasiva"]{ border-style:dashed; }
 .combat-entry[data-status="pasiva"] .combat-entry__status{ color:var(--steel); }
+
+.combat-tablet--npc {
+	--group: var(--clr-npc);
+}
 
 .post-content .combat-tablet ul, .post-content .combat-tablet ol {
     margin: 0;
