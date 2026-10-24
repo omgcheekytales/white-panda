@@ -1,0 +1,894 @@
+/* ==========================================================================
+  LISTA DE TEMAS · v6  (requiere variables_v8.css)
+
+  Cada .posts es un solo bloque: borde exterior, cabecera y filas separadas por
+  bordes. Sin gaps entre contenedores. Cada fila es una rejilla de zonas:
+
+    ICONO ......... estado del tema (acento del autor)
+    CONTENIDO ..... título · etiqueta · descripción · autor
+    STATS ......... respuestas · vistas
+    ÚLTIMO ........ último mensaje · avatar
+
+  Acento: lo que es del usuario (icono, subrayado del título, avatar, zonas
+  internas de la fila, hover) usa --group. Lo que es del que mira el foro
+  (marco, cabecera, separación entre filas) usa --groupbody.
+  Voces: mono = dato · Inter = lectura (los títulos de tema los escribe el usuario)
+
+  ≤960px: icono a la izquierda en dos filas (contenido + stats) y último mensaje debajo.
+  ≤480px: se oculta el avatar del último mensaje.
+  ========================================================================== */
+
+/* 00. BÁSICO · NO TOCAR */
+.posts-section,
+.posts-lastpost,
+.avatar-default {
+    overflow: hidden;
+}
+
+.posts-description h3 a { float: none; }
+
+.avatar-default {
+    float: none;
+    margin: 0 !important;
+}
+
+.avatar-default img { border-radius: 0; }
+
+.posts-lastpost-inner .material-icons,
+.posts-lastpost .material-symbols-outlined { display: none; }
+
+/* 01. BLOQUE · borde exterior + cabecera + filas */
+.posts {
+    container-type: inline-size;   /* las @container de abajo miden el ancho de .posts (con barra lateral es menor que la pantalla) */
+
+    border: var(--border-accent);
+
+    /* Bloques contiguos: comparten el borde, sin separación */
+    & + .posts { margin-top: calc(-1 * var(--hairline)); }
+
+    /* RESET · el CSS nativo da tamaños, padding y posiciones a estas piezas.
+      Se anulan aquí; cada zona define después lo suyo. Todo lo que sigue cuelga
+      de .posts para ganar en especificidad al CSS nativo. */
+    & :is(.posts-section, .posts-icon, .posts-content, .posts-description, .posts-statistics,
+          .posts-statistics-replies, .posts-statistics-views, .posts-lastpost, .posts-lastpost-inner, .avatar-default) {
+        float: none;
+        position: static;
+        inset: auto;
+        flex: none;
+        width: auto;
+        min-width: 0;
+        max-width: none;
+        height: auto;
+        min-height: 0;
+        margin: 0;
+        padding: 0;
+        border-radius: 0;
+        box-sizing: border-box;
+    }
+
+.posts-header {
+    min-height: var(--space-8);
+    display: grid;
+    place-content: center;
+    padding-inline: var(--pad-m);
+    background-color: var(--bg-lighter);
+    backdrop-filter: var(--filter-blur);
+    border-bottom: var(--border-accent);
+
+    & .posts-title {
+        width: auto;
+        margin: 0;
+        font-family: var(--font-type-subtitle);
+        font-size: var(--fs-md);
+        font-weight: var(--fw-medium);
+        letter-spacing: var(--ls-label);
+        line-height: var(--lh-tight);
+        text-transform: uppercase;
+        padding: 0;
+    }
+
+    /* Separador de fijados: una franja de extremo a extremo */
+    &.sticky-separator {
+        min-height: var(--space-1);
+        padding: 0;
+        border-top: var(--border-accent);
+    }
+}
+
+/* 02. FILA · rejilla de zonas */
+.posts-section {
+    --zone: var(--hairline) solid var(--group-25);
+
+    position: relative;
+    display: grid !important;
+    box-shadow: none;
+    line-height: var(--lh-tight);
+    min-height: var(--space-12);
+    grid-template-columns: var(--space-8) minmax(0, 1fr) calc(var(--space-8) * 4) minmax(0, 16rem);
+    grid-template-areas: "icon content stats last";
+    background-color: var(--bg-principal);
+    backdrop-filter: var(--filter-blur);
+    transition: background-color var(--duration-base) var(--ease-out);
+
+    & + .posts-section { border-top: var(--border-accent); }
+
+    &:hover { background-color: color-mix(in srgb, var(--bg-principal) 85%, var(--group) 15%); }
+
+    /* El contenido se reparte directamente en la rejilla de la fila */
+    & .posts-content { display: contents !important; }
+
+    /* Selección múltiple (moderación): no ocupa zona */
+    & .posts-content > input {
+        position: absolute;
+        top: var(--space-1);
+        right: var(--space-1);
+        z-index: 1;
+    }
+
+    &.posts-empty {
+        display: block !important;
+        min-height: 0;
+        padding: var(--pad-m);
+        font-family: var(--font-type-subtitle);
+        font-size: var(--fs-xs);
+        letter-spacing: var(--ls-label);
+        text-align: center;
+        text-transform: uppercase;
+        opacity: .6;
+    }
+}
+
+/* 03. ICONO */
+.posts-icon {
+    grid-area: icon;
+    display: grid;
+    place-items: center;
+    position: relative;         
+    z-index: auto;             
+    transform: none;           
+    line-height: 1;
+    text-align: center;
+    border-right: var(--border);
+
+    &::before,
+    &::after { content: none; }
+   
+    & .participate-check {
+        position: static;
+        inset: auto;
+        display: grid;
+        place-items: center;
+        line-height: 1;
+    }
+
+    & .participate-check .material-icons {
+        font-size: var(--fs-lg);
+        color: var(--group);
+    }
+}
+
+/* 03b. ICONO DE ESTADO · .posts-icon queda sin contenido (se anula el nativo y el icono de participación
+   se mueve al título), así que se dibuja uno con la fuente Material Icons del foro, según la clase.
+   Temas supervisados ya trae su propio <i> dentro de .posts-icon: ahí no se añade. */
+.posts-icon:not(:has(> i))::before {
+    content: 'chat_bubble_outline';
+    font-family: 'Material Icons';
+    font-size: var(--fs-lg);
+    font-style: normal;
+    font-weight: normal;
+    letter-spacing: normal;
+    line-height: 1;
+    text-transform: none;
+    color: var(--group);
+    -webkit-font-feature-settings: 'liga';
+    font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Con mensajes nuevos: burbuja rellena */
+.posts-icon:not(:has(> i)):is([class*="folder_new"], [class*="post_new"])::before { content: 'chat_bubble'; }
+
+/* Tipos especiales (ganan sobre "nuevo") */
+.posts-icon:not(:has(> i))[class*="global"]::before { content: 'public'; }
+.posts-icon:not(:has(> i))[class*="announce"]::before { content: 'campaign'; }
+.posts-icon:not(:has(> i))[class*="sticky"]::before { content: 'push_pin'; }
+.posts-icon:not(:has(> i))[class*="locked"]::before { content: 'lock'; }
+
+/* 04. CONTENIDO · título, etiqueta, descripción, autor */
+.posts-description {
+    grid-area: content;
+    display: grid;
+    align-content: center;
+    gap: var(--gap-s);
+    min-width: 0;
+    padding: var(--pad-s) var(--pad-m);
+
+    /* El título lo escribe el usuario: lectura (Inter), no display ni mono */
+    & h3 {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: var(--gap-s);
+        margin: 0;
+        padding-right: 0 !important;
+        font-family: var(--font-type-text);
+        font-size: var(--fs-md);
+        font-weight: var(--fw-medium);
+        letter-spacing: normal;
+        line-height: var(--lh-base);
+        text-transform: none;
+    }
+
+    & .topic-icon {
+        align-self: center;
+        width: var(--space-3);
+        height: var(--space-3);
+        object-fit: cover;
+    }
+
+    /* Subrayado fx-link con --group */
+    & :is(.topictitle, h3 > a) {
+        white-space: normal;
+        padding-bottom: calc(var(--space-1) / 2);
+        overflow-wrap: anywhere;
+        background-image: linear-gradient(var(--group), var(--group));
+        background-repeat: no-repeat;
+        background-position: 0 100%;
+        background-size: 0 var(--hairline-strong);
+        box-decoration-break: clone;
+        transition: background-size var(--duration-base) var(--ease-out);
+
+        &:is(:hover, :focus-visible) { background-size: 100% var(--hairline-strong); }
+        &:focus-visible { outline: var(--hairline-strong) solid var(--group); outline-offset: calc(var(--space-1) / 2); }
+
+        & .participate-check {
+            position: static;
+            inset: auto;
+            display: inline-grid;
+            place-items: center;
+            margin-inline: 0 var(--space-1);
+            vertical-align: middle;
+            line-height: 1;
+
+            & .material-icons {
+                font-size: var(--fs-md);
+                color: var(--group);
+            }
+        }
+    }
+
+    & .posts-topic-type {
+        &:empty {
+            display: none; 
+     }
+ 
+     & strong {
+            display: inline-block;
+            font-family: var(--font-type-subtitle);
+            font-size: var(--fs-xs);
+            font-weight: var(--fw-medium);
+            letter-spacing: var(--ls-label);
+            text-transform: uppercase;
+            border-bottom: var(--hairline-strong) solid var(--group);
+ 
+     }
+    }
+
+    & .topic-description {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        overflow: hidden;
+        font-family: var(--font-type-text);
+        font-size: var(--fs-sm);
+        line-height: var(--lh-base);
+        opacity: .7;
+    }
+
+    & p {
+        margin: 0;
+        font-family: var(--font-type-subtitle);
+        font-size: var(--fs-xs);
+        letter-spacing: var(--ls-label);
+        text-transform: uppercase;
+        color: var(--clr-text);
+
+        & strong { font-weight: var(--fw-bold); }
+    }
+}
+
+/* 05. STATS - respuestas y vistos */
+.posts-statistics {
+    min-width: 0;
+    grid-area: stats;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: auto;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    justify-items: center;
+    gap: var(--gap-m);
+    padding: var(--pad-s);
+    border-left: var(--border);
+    font-family: var(--font-type-subtitle);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+
+    & > span {
+        display: flex;
+        justify-items: center;
+        gap: calc(var(--space-1) / 2);
+        width: fit-content;
+        border-bottom: var(--hairline-strong) solid var(--group);
+        font-size: var(--fs-xs);
+        font-weight: var(--fw-regular);
+
+        & span {
+            font-size: var(--fs-xs);
+            font-weight: var(--fw-regular);
+            color: var(--clr-text);
+        }
+    }
+}
+
+/* 06. ÚLTIMO MENSAJE */
+.posts-lastpost {
+    grid-area: last;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--space-12);
+    background-color: var(--bg-darker);
+    border-left: var(--border);
+}
+
+/* Avatar */
+.avatar-default {
+    position: relative;
+    order: 1;
+    min-height: var(--space-12);
+    isolation: isolate;
+    background-color: var(--group-15);
+    border-left: var(--hairline) solid var(--group-25);
+
+    & img {
+        position: absolute;
+        inset: 0;
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        max-width: none !important;
+        max-height: none !important;
+        object-position: center 30%;
+        filter: grayscale(1);
+    }
+
+    &:has(img)::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-color: var(--group);
+        mix-blend-mode: var(--filter-blend-mode);
+    }
+}
+
+.posts-lastpost-inner {
+    display: grid;
+    align-content: center;
+    gap: var(--gap-s);
+    min-width: 0;
+    padding: var(--pad-s);
+    font-family: var(--font-type-subtitle);
+    font-size: var(--fs-xs);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+
+    & strong { font-weight: var(--fw-bold); }
+
+    & .topic-title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-family: var(--font-type-text);
+        font-size: var(--fs-sm);
+        font-weight: var(--fw-medium);
+        letter-spacing: normal;
+        text-transform: none;
+        background-image: linear-gradient(var(--group), var(--group));
+    }
+
+    & > span {
+        display: grid;
+        gap: calc(var(--space-1) / 2);
+    }
+}
+
+.posts-lastpost-time {
+    padding: 0 var(--space-1) 0 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    height: unset;
+    line-height: unset;
+    font-size: var(--fs-xs);
+ 
+    &::after {
+        content: '→';
+        display: inline-block;
+        margin-left: var(--space-1);
+        color: var(--group);
+        transition: translate var(--duration-base, .4s) var(--ease-out, ease);
+    }
+ 
+    &:is(:hover, :focus-visible) {
+        background-size: 100% var(--hairline-strong);
+ 
+        &::after {
+              translate: var(--space-1) 0;
+        }
+    }
+ 
+    & .fa-solid { display: none; }
+}
+
+/* 07. RESPONSIVE */
+@container (max-width: 52rem) {
+    .posts-section {
+        grid-template-columns: var(--space-8) minmax(0, 1fr);
+        grid-template-areas:
+            "icon content"
+            "icon stats"
+            "last last";
+    }
+
+    .posts-statistics {
+        border-left: 0;
+        border-top: var(--hairline) solid var(--group-25);
+    }
+
+    .posts-lastpost {
+        border-left: 0;
+        border-top: var(--hairline) solid var(--group-25);
+    }
+}
+
+@container (max-width: 30rem) {
+    .posts-section { grid-template-columns: var(--space-6) minmax(0, 1fr); }
+    .posts-statistics {
+        min-width: auto;
+        gap: var(--gap-s);
+
+        & > span {
+            position: relative;
+            display: flex;
+            align-items: baseline;
+            gap: 0;
+
+            & span {
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                overflow: hidden;
+                clip-path: inset(50%);
+                white-space: nowrap;
+            }
+        }
+
+        & > .posts-statistics-replies { order: 1; }
+        & > .posts-statistics-views { order: 3; }
+
+        & > .posts-statistics-replies::after {
+            content: 'R';
+            content: 'R' / '';
+        }
+
+        & > .posts-statistics-views::after {
+            content: 'V';
+            content: 'V' / '';
+        }
+
+        /* El separador fuera de los subrayados */
+        &::after {
+            content: '/';
+            order: 2;
+            color: var(--group);
+        }
+    }
+    .posts-lastpost { grid-template-columns: minmax(0, 1fr); }
+    .avatar-default { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .posts-section,
+    .posts-description .topictitle,
+    .posts-lastpost-time { transition: none; }
+}
+
+/* ==========================================================================
+   TEMAS SUPERVISADOS · añadidos para el HTML de Editar perfil > Temas supervisados
+   (mismas clases que la lista de temas; sólo cambian la cabecera, el último mensaje,
+   el icono y la casilla de selección).
+   Responsive: por ancho de contenedor (.posts), no de pantalla: ≤52rem filas en dos zonas, ≤30rem compactas.
+   ========================================================================== */
+
+/* Cabecera con columnas: repite las de las filas (la columna de stats mide lo mismo que .posts-statistics) */
+.posts-header:has(.posts-statistics-header) {
+    grid-template-columns: var(--space-8) minmax(0, 1fr) calc(var(--space-8) * 4) minmax(0, 16rem);
+    place-content: stretch;
+    padding-inline: 0;
+
+    & .posts-title {
+        grid-column: 1 / 3;
+        align-self: center;
+        padding-inline: var(--pad-m);
+    }
+
+    & :is(.posts-statistics-header, .posts-lastpost-header) {
+        float: none;
+        width: auto;
+        min-width: 0;
+        margin: 0;
+    }
+
+    & .posts-statistics-header {
+        grid-column: 3;
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: 1fr;
+        border-left: var(--border);
+
+        & > span { display: grid; place-content: center; }
+        & > span + span { border-left: var(--border); }
+    }
+
+    & .posts-lastpost-header {
+        grid-column: 4;
+        display: flex;
+        align-items: center;
+        gap: var(--gap-s);
+        padding-inline: var(--pad-s);
+        border-left: var(--border);
+        font-family: var(--font-type-subtitle);
+        font-size: var(--fs-xs);
+        letter-spacing: var(--ls-label);
+        text-transform: uppercase;
+    }
+
+    & .material-symbols-outlined { font-size: var(--fs-md); }
+}
+
+/* Icono de estado: viene como Material Symbols directamente dentro de .posts-icon */
+.posts-icon > .material-symbols-outlined {
+    font-size: var(--fs-lg);
+    color: var(--group);
+}
+
+/* Casilla de selección: círculo pequeño, con el input encima e invisible */
+.posts-description .checkbox {
+    position: relative;
+    display: inline-grid;
+    flex: none;
+    align-self: center;
+    width: var(--space-2);
+    height: var(--space-2);
+    margin: 0;
+
+    & input {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    & .checkbox-check {
+        position: static;
+        inset: auto;
+        display: grid;
+        place-content: center;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background: none;
+        border: var(--hairline) solid var(--group-50);
+        border-radius: 50%;
+        transition: border-color var(--duration-base) var(--ease-out);
+
+        &::before { content: none; }
+
+        &::after {
+            content: '';
+            width: calc(var(--space-1) - 2px);
+            height: calc(var(--space-1) - 2px);
+            border-radius: 50%;
+            background-color: var(--group);
+            scale: 0;
+            transition: scale var(--duration-fast) var(--ease-out);
+        }
+    }
+
+    &:hover .checkbox-check { border-color: var(--group); }
+    & input:checked + .checkbox-check::after { scale: 1; }
+    & input:focus-visible + .checkbox-check { outline: var(--hairline-strong) solid var(--group); outline-offset: calc(var(--space-1) / 2); }
+}
+
+/* Último mensaje sin avatar: autor y hora van directamente dentro de .posts-lastpost */
+.posts-lastpost:not(:has(.posts-lastpost-inner)) {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: center;
+    gap: var(--gap-s);
+    padding: var(--pad-s);
+    font-family: var(--font-type-subtitle);
+    font-size: var(--fs-xs);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+
+    & strong { font-weight: var(--fw-bold); }
+}
+
+@container (max-width: 52rem) {
+    .posts-header:has(.posts-statistics-header) {
+        grid-template-columns: minmax(0, 1fr);
+
+        & .posts-title { grid-column: 1; }
+        & :is(.posts-statistics-header, .posts-lastpost-header) { display: none; }
+    }
+}
+
+}
+
+/* ==========================================================================
+   TEMAS SUPERVISADOS · marco de Editar perfil  (mismo código de lista que arriba)
+
+   Página de Editar perfil sin template propio. Cuelga de .cp-inner:has(#memberlist.posts).
+   Un solo bloque (borde exterior --border) con la lista, una fila de botones iguales,
+   la paginación y el selector de foro como zonas separadas por bordes.
+   Bordes: --border (también en la cabecera y entre las filas de la lista).
+   ========================================================================== */
+
+.cp-inner:has(#memberlist.posts) {
+    border: var(--border);
+    background-color: var(--bg-principal);
+    backdrop-filter: var(--filter-blur);
+
+    & form { margin: 0; }
+
+    & .block {
+        margin: 0;
+        padding: 0;
+        background: none;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    & .block-header {
+        display: grid;
+        place-content: center;
+        min-height: var(--space-8);
+        margin: 0;
+        padding: 0 var(--pad-m);
+        background-color: var(--bg-lighter);
+        border: 0;
+        border-bottom: var(--border);
+        border-radius: 0;
+        box-shadow: none;
+        font-family: var(--font-type-subtitle);
+        font-size: var(--fs-md);
+        font-weight: var(--fw-medium);
+        letter-spacing: var(--ls-label);
+        line-height: var(--lh-tight);
+        text-transform: uppercase;
+    }
+
+    /* La lista queda dentro del marco: sin borde propio, y su cabecera y sus filas se separan con --border */
+    & .posts {
+        border: 0;
+
+        & .posts-header { border-bottom: var(--border); }
+        & .posts-header.sticky-separator { border-top: var(--border); }
+        & .posts-section + .posts-section { border-top: var(--border); }
+    }
+
+    /* FORMULARIO = rejilla: bloque, lista, botones y paginación apilados; los botones comparten fila */
+    & form[name="post"] {
+        --btn-cols: 3;
+        display: grid;
+        grid-template-columns: repeat(var(--btn-cols), minmax(0, 1fr));
+
+        & > * { grid-column: 1 / -1; }
+
+        & > .mark-buttons {
+            grid-column: span 2;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        & > .form-buttons {
+            grid-column: span 1;
+            display: grid;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            min-width: 0;
+        }
+
+        & > .pagination { order: 2; }
+    }
+
+    /* Botones: mismo tamaño, el texto puede partirse */
+    & :is(.mark-buttons, .form-buttons) > :is(.btn, input[type="submit"]) {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--gap-s);
+        width: 100%;
+        height: auto;
+        min-height: var(--space-6);
+        margin: 0;
+        padding: var(--space-1) var(--space-2);
+        border: 0;
+        border-top: var(--border);
+        border-radius: 0;
+        font-family: var(--font-type-subtitle);
+        font-size: var(--fs-xs);
+        font-weight: var(--fw-regular);
+        letter-spacing: var(--ls-label);
+        line-height: var(--lh-base);
+        text-align: center;
+        text-transform: uppercase;
+        text-decoration: none;
+        white-space: normal;
+        color: var(--clr-text);
+        cursor: pointer;
+
+        & .material-symbols-outlined { font-size: var(--fs-md); }
+    }
+
+    & .mark-buttons > .btn + .btn,
+    & .form-buttons > input { border-left: var(--border); }
+
+    /* Marcar / desmarcar: barrido de relleno (fx-chip) */
+    & .mark-buttons > .btn {
+        background-color: transparent;
+        background-image: linear-gradient(var(--groupbody-25), var(--groupbody-25));
+        background-repeat: no-repeat;
+        background-position: 0 0;
+        background-size: 0 100%;
+        box-shadow: none;
+        transition: background-size var(--duration-base) var(--ease-out);
+
+        &:is(:hover, :focus-visible) { background-size: 100% 100%; }
+    }
+
+    /* Dejar de supervisar: acción destructiva, en rojo (--grupo3) */
+    & .form-buttons > input[type="submit"] {
+        background-color: transparent;
+        background-image: linear-gradient(var(--grupo3), var(--grupo3));
+        background-repeat: no-repeat;
+        background-position: 0 100%;
+        background-size: 100% 0;
+        box-shadow: none;
+        transition:
+            background-size var(--duration-base) var(--ease-out),
+            color var(--duration-base) var(--ease-out);
+
+        &:is(:hover, :focus-visible) { background-size: 100% 100%; }
+    }
+
+    /* Paginación: una zona de extremo a extremo */
+    & .pagination:has(> a.mobile-hidden-imp) {
+        width: 100%;
+        max-width: none;
+        border: 0;
+        border-top: var(--border);
+    }
+
+    /* Selector de foro: zona final */
+    & form[name="jumpbox"] {
+        border-top: var(--border);
+
+        & label {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr);
+            align-items: center;
+            gap: var(--gap-m);
+            margin: 0;
+            padding: var(--pad-s) var(--pad-m);
+            font-family: var(--font-type-subtitle);
+            font-size: var(--fs-xs);
+            letter-spacing: var(--ls-label);
+            text-transform: uppercase;
+        }
+
+        & .jumpbox-wrap {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: var(--gap-s);
+        }
+
+        & .select { display: grid; }
+
+        & select {
+            box-sizing: border-box;
+            width: 100%;
+            margin: 0;
+            padding: var(--space-1) var(--space-4) var(--space-1) var(--space-2);
+            appearance: none;
+            background-color: var(--bg-darker);
+            background-image: linear-gradient(45deg, transparent 50%, var(--groupbody) 50%), linear-gradient(135deg, var(--groupbody) 50%, transparent 50%);
+            background-position: calc(100% - var(--space-2) - 4px) 50%, calc(100% - var(--space-2)) 50%;
+            background-size: 4px 4px;
+            background-repeat: no-repeat;
+            border: var(--border);
+            border-radius: 0;
+            font-family: var(--font-type-text);
+            font-size: var(--fs-sm);
+            text-transform: none;
+            letter-spacing: normal;
+            color: var(--clr-text);
+            cursor: pointer;
+
+            &:is(:focus, :focus-visible) { outline: 0; border-color: var(--groupbody); }
+        }
+
+        & .btn {
+            padding: var(--space-1) var(--space-3);
+            border: 0;
+            border-radius: 0;
+            background-color: transparent;
+            background-image: linear-gradient(var(--groupbody), var(--groupbody));
+            background-repeat: no-repeat;
+            background-position: 0 100%;
+            background-size: 100% 0;
+            box-shadow: inset 0 0 0 var(--hairline) var(--groupbody);
+            font-family: var(--font-type-subtitle);
+            font-size: var(--fs-xs);
+            letter-spacing: var(--ls-label);
+            text-transform: uppercase;
+            color: var(--clr-text);
+            cursor: pointer;
+            transition:
+                background-size var(--duration-base) var(--ease-out),
+                color var(--duration-base) var(--ease-out);
+
+            &:is(:hover, :focus-visible) { background-size: 100% 100%; color: var(--bg-darker); }
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .cp-inner:has(#memberlist.posts) {
+        /* Tres botones: dos y uno, todos del mismo tamaño (el hueco del último conserva su línea) */
+        & form[name="post"] {
+            --btn-cols: 2;
+
+            & > .form-buttons > input { border-left: 0; }
+
+            &::after {
+                content: '';
+                order: 1;
+                grid-column: auto / -1;
+                border-top: var(--border);
+            }
+        }
+
+        & form[name="jumpbox"] label { grid-template-columns: minmax(0, 1fr); }
+    }
+}
+
+@media (max-width: 360px) {
+    .cp-inner:has(#memberlist.posts) form[name="post"] {
+        --btn-cols: 1;
+
+        & > .mark-buttons { grid-template-columns: minmax(0, 1fr); }
+        & > .mark-buttons > .btn + .btn { border-left: 0; }
+        &::after { display: none; }
+    }
+}
