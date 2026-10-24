@@ -150,8 +150,7 @@
     text-align: center;
     border-right: var(--border);
 
-    &::before,
-    &::after { content: none; }
+    &::before { content: none; }
    
     & .participate-check {
         position: static;
@@ -166,33 +165,6 @@
         color: var(--group);
     }
 }
-
-/* 03b. ICONO DE ESTADO · .posts-icon queda sin contenido (se anula el nativo y el icono de participación
-   se mueve al título), así que se dibuja uno con la fuente Material Icons del foro, según la clase.
-   Temas supervisados ya trae su propio <i> dentro de .posts-icon: ahí no se añade. */
-.posts-icon:not(:has(> i))::before {
-    content: 'chat_bubble_outline';
-    font-family: 'Material Icons';
-    font-size: var(--fs-lg);
-    font-style: normal;
-    font-weight: normal;
-    letter-spacing: normal;
-    line-height: 1;
-    text-transform: none;
-    color: var(--group);
-    -webkit-font-feature-settings: 'liga';
-    font-feature-settings: 'liga';
-    -webkit-font-smoothing: antialiased;
-}
-
-/* Con mensajes nuevos: burbuja rellena */
-.posts-icon:not(:has(> i)):is([class*="folder_new"], [class*="post_new"])::before { content: 'chat_bubble'; }
-
-/* Tipos especiales (ganan sobre "nuevo") */
-.posts-icon:not(:has(> i))[class*="global"]::before { content: 'public'; }
-.posts-icon:not(:has(> i))[class*="announce"]::before { content: 'campaign'; }
-.posts-icon:not(:has(> i))[class*="sticky"]::before { content: 'push_pin'; }
-.posts-icon:not(:has(> i))[class*="locked"]::before { content: 'lock'; }
 
 /* 04. CONTENIDO · título, etiqueta, descripción, autor */
 .posts-description {
